@@ -33,7 +33,7 @@
 12. [Cpu Frequency Adjustment](#12-cpu-frequency-adjustment)
 13. [5G Core deployment](#14-run-oai-gnb)
 14. [Run OAI gNB](#14-run-oai-gnb)
-
+15. [O-RU commands](#15-o-ru-commands)
 # 1. Hardware Info
 The hardware on which we have tried this tutorial:
 
@@ -88,17 +88,26 @@ cat /etc/os-release
 
 # 3. CPU allocation & Grub Update
 
-This section is important to read, regardless of the operating system you are using.
+**This section is important to read, regardless of the operating system you are using.**
+
 Your server could be:
 
-1-socket CPU : all the processors are sharing a single memory system.
-2-socket CPU : processors are grouped in 2 memory systems.
+* 1-socket CPU : all the processors are sharing a single memory system.
 
-DPDK, OAI and kernel threads require to be properly allocated to extract maximum real-time performance for your use case.
+* 2-socket CPU : processors are grouped in 2 memory systems.
+
+* DPDK, OAI and kernel threads require to be properly allocated to extract maximum real-time performance for your use case.
 
 
-NOTE: Currently the default OAI 7.2 configuration file requires isolated CPUs 0,2,4 for DPDK/libXRAN, CPU 6 for ru_thread and CPU 8 for L1_rx_thread. It is preferrable to have all these threads on the same socket.
-Allocating CPUs to the nr-softmodem is done using the --thread-pool option. Allocating 4 CPUs is the minimal configuration but we recommend to allocate at least 8 CPUs. And they can be on a different socket as the DPDK threads.
+* Currently the default OAI 7.2 configuration file requires isolated CPUs 0,2,4 for DPDK/libXRAN, 
+
+* CPU 6 for ru_thread and CPU 8 for L1_rx_thread. 
+
+> It is preferrable to have all these threads on the same socket.
+
+* Allocating CPUs to the nr-softmodem is done using the --thread-pool option. 
+
+* Allocating 4 CPUs is the minimal configuration but we recommend to allocate at least 8 CPUs. And they can be on a different socket as the DPDK threads.
 And to avoid kernel preempting these allocated CPUs, it is better to force the kernel to use un-allocated CPUs.
 
 Let summarize for example on a 32-CPU system, regardless of the number of sockets:
@@ -120,7 +129,7 @@ NUMA node1 CPU(s):   28-55
 Copy the below arguements and paste it in the `/etc/default/grub` file.
 
 ```bash
-igb.max_vfs=2 intel_iommu=on iommu=pt mitigations=off cgroup_memory=1 cgroup_enable=memory mce=off idle=poll hugepagesz=1G hugepages=40 hugepagesz=2M hugepages=0 default_hugepagesz=1G selinux=0 enforcing=0 nmi_watchdog=0 softlockup_panic=0 audit=0 skew_tick=1 rcu_nocb_poll cgroup_disable=memory kthread_cpus=9-27,38-55 skew_tick=1 isolcpus=managed_irq,domain,0-8 nohz_full=0-8 rcu_nocbs=0-8 intel_pstate=disable nosoftlockup tsc=nowatchdog skew_tick=1 isolcpus=managed_irq,domain,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55 intel_pstate=disable nosoftlockup tsc=reliable
+igb.max_vfs=2 intel_iommu=on iommu=pt mitigations=off cgroup_memory=1 cgroup_enable=memory mce=off idle=poll hugepagesz=1G hugepages=40 hugepagesz=2M hugepages=0 default_hugepagesz=1G selinux=0 enforcing=0 nmi_watchdog=0 softlockup_panic=0 audit=0 skew_tick=1 rcu_nocb_poll cgroup_disable=memory kthread_cpus=9-27,38-55 skew_tick=1 isolcpus=managed_irq,domain,0-8 nohz_full=0-8 rcu_nocbs=0-8 intel_pstate=disable nosoftlockup tsc=nowatchdog
 ```
 
 ```bash
@@ -409,44 +418,47 @@ sudo ethtool -G ens1f0 rx 4096 tx 4096
 
 Check the following this in the `mwc_20899_newfhi_E_3450.conf` file
 
-The PLMN section shall match the one defined in the AMF
+* The `PLMN` section shall match the one defined in the AMF
 
-amf_ip_address shall be the correct AMF IP address in your system
+* `amf_ip_address` shall be the correct AMF IP address in your system
 
-GNB_INTERFACE_NAME_FOR_NG_AMF and GNB_IPV4_ADDRESS_FOR_NG_AMF shall match your DU N2 interface name and IP address
+* `GNB_INTERFACE_NAME_FOR_NG_AMF` and `GNB_IPV4_ADDRESS_FOR_NG_AMF` shall match your DU N2 interface name and IP address
 
-GNB_INTERFACE_NAME_FOR_NGU and GNB_IPV4_ADDRESS_FOR_NGU shall match your DU N3 interface name and IP address
-Adjust the frequency, bandwidth and SSB position
-Set an isolated core for L1 thread L1_rx_thread_core in our environment we are using CPU 8
-Set an isolated core for RU thread ru_thread_core in our environment we are using CPU 6
+* `GNB_INTERFACE_NAME_FOR_NGU` and `GNB_IPV4_ADDRESS_FOR_NGU` shall match your DU N3 interface name and IP address
 
-phase_compensation should be set to 0 to disable when it is performed in the RU and set to 1 when it should be performed on the DU side
+* Adjust the `frequency`, `bandwidth` and `SSB` position
 
- sdr_addrs = "dummy --usecasefile /home/two/openairinterface5g/cmake_targets/ran_build/build/usecase_du_3450.cfg --num_eth_vfs 2 --vf_addr_o_xu_a \"0000:31:02.0,0000:31:02.1\""
+* Set an isolated core for L1 thread `L1_rx_thread_core` in our environment we are using CPU 8
 
-On our system, the ~ folder corresponds to /home/two
+* Set an isolated core for RU thread `ru_thread_core` in our environment we are using CPU 6
+
+* `phase_compensation` should be set to 0 to disable when it is performed in the RU and set to 1 when it should be performed on the DU side
+
+* `sdr_addrs = "dummy --usecasefile /home/two/openairinterface5g/cmake_targets/ran_build/build/usecase_du_3450.cfg --num_eth_vfs 2 --vf_addr_o_xu_a \"0000:31:02.0,0000:31:02.1\""`
+
+> On our system, the ~ folder corresponds to /home/two
 
 The fact that we are providing an absolute path to the O-RAN FHI configuration dat file makes it easier to manage.
 
 
-3.2. Adapt the O-RAN fronthaul interface configuration dat file to your system:
+Adapt the O-RAN fronthaul interface configuration dat file to your system:
 
 Checkout the following fields in the `config_o_du_3450_E.dat` file.
 
-ruMac0
-ruMac1
+* ruMac0
+* ruMac1
 
-Set the VLAN tags, mtu and
+Set the following things:
 
-c_plane_vlan_tag
-u_plane_vlan_tag
-mtu
+* c_plane_vlan_tag
+* u_plane_vlan_tag
+* mtu
 
 Set the cores for DPDK
 
-systemCore (absolute coreId)
-ioWorker (it is a mask: 1<<coreid) (For example if you select core 2 then this value should be 4)
-ioCore (absolute coreId)
+* systemCore (absolute coreId)
+* ioWorker (it is a mask: 1<<coreid) (For example if you select core 2 then this value should be 4)
+* ioCore (absolute coreId)
 
 Adjust the frequency, bandwidth and any other parameter which is relevant to your environment.
 
@@ -497,3 +509,14 @@ cd ~/Liteon-OAI/cmake_targets/ran_build/build/
 sudo LD_LIBRARY_PATH=.:/usr/local/lib64 ./nr-softmodem -O mwc_20899_newfhi_E_3450.conf --sa --reorder-thread-disable 1 --thread-pool 30,31,32,33,34,35,36,36,37
 ```
 The logs should be something like this: [nr-softmodem](./logs/nr-softmodem_logs.log)
+
+# 15. O-RU commands
+
+After every reboot run the following commands:
+
+```bash
+devmem 0x80001014 32 0x00030002
+devmem 0x80001018 32 0x00010000 
+devmem 0x8000201C 32 0x00000001
+```
+
