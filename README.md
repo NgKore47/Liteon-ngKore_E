@@ -56,6 +56,8 @@ For further hardware info check out this file: [HW-info](./hwinfo.txt)
 Install the real time kernel after the fresh OS installation.
 
 ```bash
+git clone https://github.com/NgKore47/Liteon-ngKore_E.git
+cd Liteon-ngKore_E/
 sudo bash ./rhel-packages/rtk.sh
 ```
 
@@ -151,6 +153,7 @@ GRUB_CMDLINE_LINUX="crashkernel=auto resume=/dev/mapper/rhel-swap rd.lvm.lv=rhel
 GRUB_DISABLE_RECOVERY="true"
 GRUB_ENABLE_BLSCFG=true
 ```
+> NOTE: In grub, make sure to give specific cores to `kthread_cpus` in `GRUB_CMDLINE_LINUX` based on the system.
 
 grub update
 
@@ -224,7 +227,7 @@ bash ./rhel-packages/numa.sh
 ## 4.3 Install required libraries for RAN build:
 
 ```bash
-bash dependency_lib_8.sh
+bash ./rhel-packages/dependency_lib_8.sh
 ```
 
 ## 4.4 Install ninja
@@ -280,7 +283,9 @@ tar xvf dpdk-20.11.7.tar.xz && cd dpdk-stable-20.11.7
 ninja -C build
 sudo ninja install -C build
 ```
-> Note: DPDK build process will take a good time to complete.
+> Note: DPDK build process will take a good time to complete. While building it will also show some message like: 
+> `NOTICE: You are using Python 3.6 *ich is EOL. Starting with ve.62.ø, Meson will require Python 3.7 or newer`. 
+> Ignore this message and proceed further.
 
 After DPDK has been built successfully, execute the following commands.
 
@@ -308,94 +313,93 @@ the above command should give the following output:
 # 7. OSC-PHY installation
 
 ```bash
-git clone https://gerrit.o-ran-sc.org/r/o-du/phy.git
-cd phy
+git clone https://github.com/NgKore47/liteon-phy.git
+cd liteon-phy
 git checkout oran_e_maintenance_release_v1.0
+# git apply phy_final.patch
 ```
-Copy the phy patch file and apply it
+> **Note:** In this liteon-phy repo, the patch file is already applied. You need not to apply it again.
 
-```bash
-cp ../rhel-packages/phy_final.patch .
-git apply phy_final.patch
-```
 
-Export the the path. Path should be mentioned according to the hostname. In this case `hostname` is `two`
+### Export the the path:
 ```bash
-export XRAN_LIB_DIR=/home/two/phy/fhi_lib/lib/build
-export XRAN_DIR=/home/two/phy/fhi_lib
-export RTE_SDK=/home/two/dpdk-stable-20.11.7
+export XRAN_LIB_DIR=/home/$(hostname)/phy/fhi_lib/lib/build
+export XRAN_DIR=/home/$(hostname)/phy/fhi_lib
+export RTE_SDK=/home/$(hostname)/dpdk-stable-20.11.7
 export RTE_TARGET=x86_64-native-linuxapp-gcc
 export RTE_INCLUDE=/usr/local/include
 ```
 
-FHI build
-
+### FHI build
 ```bash
+cd phy/fhi_lib/lib
 make XRAN_LIB_SO=1
 ```
 
-Output will show something like this:
+#### Output will show something like this:
 ```
 [AR] build/libxran.so
 ./build/libxran.so
 GTEST_ROOT is not set. Unit tests are not compiled
 "echo "GTEST_ROOT is not set. Unit tests are not compiled"" command exited with code 0.
-
 ```
 
 # 8. Build OAI gNB
 
-
-Build OAI
-
+### Build OAI
 ```bash
 cd Liteon-ngKore_E/cmake_targets/
 ./build_oai  --gNB --ninja -t oran_fhlib_5g -I
 ```
 ![build_oai](./images/build_oai.jpg)
 
-Copy the `libxran.xo`
-
+### Copy the `libxran.xo`
 ```bash
-sudo cp /home/two/phy/fhi_lib/lib/build/libxran.so /usr/local/lib
-sudo cp /home/two/phy/fhi_lib/lib/build/libxran.so /home/two/Liteon-ngKore_E/cmake_targets/ran_build/build
+sudo cp /home/$(hostname)/phy/fhi_lib/lib/build/libxran.so /usr/local/lib
+sudo cp /home/$(hostname)/phy/fhi_lib/lib/build/libxran.so /home/$(hostname)/Liteon-ngKore_E/cmake_targets/ran_build/build
 ```
 
 # 9. Linux PTP installation
 
-For this tutorial we are using `Fibrolan Falcon-Rx` C1 & C3 both can be used.
-While using C1: `ens1f1` is connected with Fibrolan and `ens1f0` is directly connected with Liteon O-RU.
-While using C3 `ens1f0` is connected with Fibrolan
+For this tutorial we are using `Fibrolan Falcon-Rx` C1 & C3 both can be used.<br>
+While using C1: `ens1f1` is connected with Fibrolan and `ens1f0` is directly connected with Liteon O-RU.<br>
+While using C3 `ens1f0` is connected with Fibrolan. <br>
+Here `ens1f0` is the interface of DU server.
+
+> **NOTE:** <br> 
+> Generally, in `C1`,  *RU --- DU --- PTP*  i.e `RU` is directly connected to `DU` and `DU` is connected to clock source(`Fibrolan`).<br>
+> But in `C3`,   *RU --- PTP --- DU*  i.e `RU` is directly connected to clock source(`Fibrolan`) and then clock source is connected to `DU`.
 
 ```bash
 git clone https://github.com/NgKore47/linuxptp.git
 ```
-Build linuxptp:
+### Build linuxptp:
 ```bash
 cd linuxptp
 sudo make 
 sudo make install
 ```
-Run `ptp4l` & `phc2sys` using linuxptp
 
-## For C1
+### Run `ptp4l` & `phc2sys` using linuxptp
+#### For C1
 
 ```bash
 sudo ./ptp4l -i ens1f1 -m -H -2 -s -f configs/c1.cfg
 sudo ./phc2sys -w -m -s ens1f1 -R 8 -f configs/c1.cfg
 sudo ./ptp4l -i ens1f0 -m -H -2 -f configs/c1.cfg
 ```
-## For C3
+#### For C3
 
 ```bash
 sudo ./ptp4l -i ens1f0 -m -H -2 -s -f configs/default.cfg
 sudo ./phc2sys -w -m -s ens1f0 -R 8 -f configs/default.cfg
 ```
+> **Note:** Use specific interface name in place of `ens1f0`, based on your system.
 
 # 10. Bind devices
 **Note:** Same interface `ens1f0` will be used here.
 
-> You must be super-user
+> **NOTE:**  You must be super-user
 
 ```bash
 echo "0" > /sys/class/net/ens1f0/device/sriov_numvfs
@@ -405,7 +409,7 @@ sudo ip link set ens1f0 vf 1 mac 00:11:22:33:44:66 vlan 564 spoofchk off trust o
 modprobe vfio_pci
 ```
 
-Check the PCI address of the virtual functions, in this case it is: `0000:31:02.0` & `0000:31:02.1`
+> **NOTE:** Check the PCI address of the virtual functions and change it accordingly, in this case it is: `0000:31:02.0` & `0000:31:02.1`
 
 ```bash
 sudo /usr/local/bin/dpdk-devbind.py -s
@@ -416,11 +420,16 @@ sudo ethtool -G ens1f0 rx 4096 tx 4096
 ```
 # 11. Configure Server and OAI gNB
 
-Check the following this in the `mwc_20899_newfhi_E_3450.conf` file
+### Copy important files needed for running `nr-softmodem` cmd
+```
+cd /home/$(hostname)/Liteon-ngKore_E/rhel-packages/modified_oai_serv2
+cp config_o_du_3450_E.dat mwc_20899_newfhi_E_3450.conf usecase_du_3450.cfg ../../cmake_targets/ran_build/build/
+```
 
+### Check the following this in the `mwc_20899_newfhi_E_3450.conf` file
 * The `PLMN` section shall match the one defined in the AMF
 
-* `amf_ip_address` shall be the correct AMF IP address in your system
+* `amf_ip_address` shall be the correct AMF IP address in your system i.e. `192.168.70.132` for OAI-Core
 
 * `GNB_INTERFACE_NAME_FOR_NG_AMF` and `GNB_IPV4_ADDRESS_FOR_NG_AMF` shall match your DU N2 interface name and IP address
 
@@ -434,33 +443,32 @@ Check the following this in the `mwc_20899_newfhi_E_3450.conf` file
 
 * `phase_compensation` should be set to 0 to disable when it is performed in the RU and set to 1 when it should be performed on the DU side
 
-* `sdr_addrs = "dummy --usecasefile /home/two/openairinterface5g/cmake_targets/ran_build/build/usecase_du_3450.cfg --num_eth_vfs 2 --vf_addr_o_xu_a \"0000:31:02.0,0000:31:02.1\""`
+* `sdr_addrs = "dummy --usecasefile /home/two/Liteon-ngKore_E/cmake_targets/ran_build/build/usecase_du_3450.cfg --num_eth_vfs 2 --vf_addr_o_xu_a \"0000:31:02.0,0000:31:02.1\""`. Here change the hostname and pic address fo vfs according to your server.
 
-> On our system, the ~ folder corresponds to /home/two
+> **NOTE:** On our system, the ~ folder corresponds to /home/two
 
 The fact that we are providing an absolute path to the O-RAN FHI configuration dat file makes it easier to manage.
 
 
-Adapt the O-RAN fronthaul interface configuration dat file to your system:
+### Adapt the O-RAN fronthaul interface configuration dat file to your system:
 
-Checkout the following fields in the `config_o_du_3450_E.dat` file.
-
+##### Checkout the following fields in the `config_o_du_3450_E.dat` file at `/home/two/Liteon-ngKore_E/rhel-packages`
 * ruMac0
 * ruMac1
 
-Set the following things:
+##### Set the following things:
 
 * c_plane_vlan_tag
 * u_plane_vlan_tag
 * mtu
 
-Set the cores for DPDK
+##### Set the cores for DPDK
 
 * systemCore (absolute coreId)
 * ioWorker (it is a mask: 1<<coreid) (For example if you select core 2 then this value should be 4)
 * ioCore (absolute coreId)
 
-Adjust the frequency, bandwidth and any other parameter which is relevant to your environment.
+##### Adjust the frequency, bandwidth and any other parameter which is relevant to your environment.
 
 ## 12. Cpu Frequency Adjustment:
 
@@ -479,14 +487,17 @@ sudo cpupower frequency-set -u 3100000
 sudo cpupower frequency-set -d 3100000
 ```
 
-NOTE: After doing the whole tests, set the frequency to default values by running the following commands.
+> **NOTE:** After doing the whole tests, set the frequency to default values by running the following commands.
 
 ```bash
 sudo cpupower frequency-set --governor powersave
 sudo cpupower frequency-set --min 800MHz --max 3.10GHz
 sudo cpupower idle-set -E
 ```
-> This system supports minimum 800 MHz frequency
+
+> **NOTE:** This system supports minimum 800 MHz frequency <br>
+> You can also see the current frequency using: `cpupower frequency-info `<br>
+> Also to see temprature of system use: `sensors`
 
 # 13. 5G Core deployment
 
@@ -505,14 +516,18 @@ where  `enp177s0f0` is the interface of this system which will be connected to t
 # 14. Run OAI gNB
 
 ```bash
-cd ~/Liteon-OAI/cmake_targets/ran_build/build/
+cd ~/Liteon-ngKore_E/cmake_targets/ran_build/build/
 sudo LD_LIBRARY_PATH=.:/usr/local/lib64 ./nr-softmodem -O mwc_20899_newfhi_E_3450.conf --sa --reorder-thread-disable 1 --thread-pool 30,31,32,33,34,35,36,36,37
 ```
+> **NOTE:** Make sure to change the cores according to your server specs.
+
 The logs should be something like this: [nr-softmodem](./logs/nr-softmodem_logs.log)
 
 # 15. O-RU commands
 
-After every reboot run the following commands:
+After every reboot of RU, run the following commands:
+
+> **NOTE:** Prefer not to copy and paste these commands
 
 ```bash
 devmem 0x80001014 32 0x00030002
