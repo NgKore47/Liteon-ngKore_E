@@ -37,12 +37,21 @@
 # 1. Hardware Info
 The hardware on which we have tried this tutorial:
 
+### 2 NUMA Node system i.e server `two`
 
 |Hardware (CPU,RAM)                          |Operating System (kernel)                  |NIC (Vendor,Driver)                     | Server Number |
 |--------------------------------------------|----------------------------------|-------------------------------------------------|------|
 | Intel(R) Xeon(R) Gold 6330, 56-Core, 2 nodes | RHEL 8.7 (with rtk installed) | Intel X710 for 10GbE SFP+,i40e | server 2 |
 
-For further hardware info check out this file: [HW-info](./hwinfo.txt)
+For further hardware info check out this file: [HW-info-NUMA-2](./hwinfo_2_NUMA.txt)
+
+### 1 NUMA Node system i.e server `seven`
+
+|Hardware (CPU,RAM)                          |Operating System (kernel)                  |NIC (Vendor,Driver)                     | Server Number |
+|--------------------------------------------|----------------------------------|-------------------------------------------------|------|
+| Intel(R) Xeon(R) Gold 6354, 18-Core, 1 nodes | RHEL 8.7 (with rtk installed) | Intel XXV710 for 10GbE SFP+,i40e | server 7 |
+
+For further hardware info check out this file: [HW-info-NUMA-1](./hwinfo_1_NUMA.txt)
 
 ## BIOS settings:
 
@@ -114,7 +123,27 @@ And to avoid kernel preempting these allocated CPUs, it is better to force the k
 
 Let summarize for example on a 32-CPU system, regardless of the number of sockets:
 
+### For one socket system i.e 1 NUMA Node
+|Applicative Threads  | Allocated CPUs   |
+|---------------------|------------------|
+| XRAN DPDK usage     | 0,2,4            |
+| OAI ru_thread       | 6                |
+| OAI L1_rx_thread    | 8                |
+| nr-softmodem        | 9,10,11,12,13,14,15    |
+| kernel              | 16-17           |
 
+> Note: In our case we have `18` cores
+```
+NUMA node0 CPU(s):   0-17
+```
+Copy the below arguements and paste it in the `/etc/default/grub` file.
+
+```bash
+igb.max_vfs=2 intel_iommu=on iommu=pt mitigations=off cgroup_memory=1 cgroup_enable=memory mce=off idle=poll hugepagesz=1G hugepages=40 hugepagesz=2M hugepages=0 default_hugepagesz=1G selinux=0 enforcing=0 nmi_watchdog=0 softlockup_panic=0 audit=0 skew_tick=1 rcu_nocb_poll cgroup_disable=memory kthread_cpus=16-17 skew_tick=1 isolcpus=managed_irq,domain,0-8 nohz_full=0-8 rcu_nocbs=0-8 intel_pstate=disable nosoftlockup tsc=nowatchdog
+```
+> **OR**
+
+### For two socket system i.e 2 NUMA Node
 |Applicative Threads  | Allocated CPUs   |
 |---------------------|------------------|
 | XRAN DPDK usage     | 0,2,4            |
@@ -123,7 +152,7 @@ Let summarize for example on a 32-CPU system, regardless of the number of socket
 | nr-softmodem        | 30,31,32,33,34,35,36,36,37 |
 | kernel              | 9-27,38-55       |
 
-> Note: Used 2 Numa node system for this deployment
+> Note: In our case we have `56` cores
 ```
 NUMA node0 CPU(s):   0-27
 NUMA node1 CPU(s):   28-55
@@ -133,6 +162,7 @@ Copy the below arguements and paste it in the `/etc/default/grub` file.
 ```bash
 igb.max_vfs=2 intel_iommu=on iommu=pt mitigations=off cgroup_memory=1 cgroup_enable=memory mce=off idle=poll hugepagesz=1G hugepages=40 hugepagesz=2M hugepages=0 default_hugepagesz=1G selinux=0 enforcing=0 nmi_watchdog=0 softlockup_panic=0 audit=0 skew_tick=1 rcu_nocb_poll cgroup_disable=memory kthread_cpus=9-27,38-55 skew_tick=1 isolcpus=managed_irq,domain,0-8 nohz_full=0-8 rcu_nocbs=0-8 intel_pstate=disable nosoftlockup tsc=nowatchdog
 ```
+
 
 ```bash
 sudo vim /etc/default/grub
@@ -517,6 +547,10 @@ where  `enp177s0f0` is the interface of this system which will be connected to t
 
 ```bash
 cd ~/Liteon-ngKore_E/cmake_targets/ran_build/build/
+# For 1 NUMA Node system
+sudo LD_LIBRARY_PATH=.:/usr/local/lib64 ./nr-softmodem -O mwc_20899_newfhi_E_3450.conf --sa --reorder-thread-disable 1 --thread-pool 9,10,11,12,13,14,15
+
+# For 2 NUMA Node system
 sudo LD_LIBRARY_PATH=.:/usr/local/lib64 ./nr-softmodem -O mwc_20899_newfhi_E_3450.conf --sa --reorder-thread-disable 1 --thread-pool 30,31,32,33,34,35,36,36,37
 ```
 > **NOTE:** Make sure to change the cores according to your server specs.
