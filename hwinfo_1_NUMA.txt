@@ -1,0 +1,64 @@
+1. CPU INFO
+
+[seven@seven ~]$ lscpu
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              18
+On-line CPU(s) list: 0-17
+Thread(s) per core:  1
+Core(s) per socket:  18
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               106
+Model name:          Intel(R) Xeon(R) Gold 6354 CPU @ 3.00GHz
+Stepping:            6
+CPU MHz:             3600.000
+CPU max MHz:         3600.0000
+CPU min MHz:         800.0000
+BogoMIPS:            6000.00
+Virtualization:      VT-x
+L1d cache:           48K
+L1i cache:           32K
+L2 cache:            1280K
+L3 cache:            39936K
+NUMA node0 CPU(s):   0-17
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 invpcid_single ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect wbnoinvd dtherm ida arat pln pts avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid fsrm md_clear pconfig flush_l1d arch_capabilities
+
+
+2. MEM INFO:
+
+[seven@seven ~]$ free -h
+              total        used        free      shared  buff/cache   available
+Mem:          376Gi        40Gi       318Gi        76Mi        17Gi       333Gi
+Swap:         4.0Gi          0B       4.0Gi
+
+========================================== AFTER UPGRADING TO RHEL RTK 8.8 ==================================================
+
+3. KERNEL INFO:
+
+[seven@seven ~]$ uname -r
+4.18.0-513.5.1.rt7.307.el8_9.x86_64
+[seven@seven ~]$ uname -a
+Linux seven 4.18.0-513.5.1.rt7.307.el8_9.x86_64 #1 SMP PREEMPT_RT Fri Sep 29 11:29:18 EDT 2023 x86_64 x86_64 x86_64 GNU/Linux
+
+4. NIC INFO:
+
+[seven@seven ~]$ ethtool -i ens2f0
+driver: i40e
+version: 4.18.0-513.5.1.rt7.307.el8_9.x8
+firmware-version: 6.80 0x80003d05 1.2007.0
+expansion-rom-version:
+bus-info: 0000:8a:00.0
+supports-statistics: yes
+supports-test: yes
+supports-eeprom-access: yes
+supports-register-dump: yes
+supports-priv-flags: yes
+
+5. BOOT INFO:
+
+[seven@seven ~]$ cat /proc/cmdline
+BOOT_IMAGE=(hd0,gpt2)/vmlinuz-4.18.0-513.5.1.rt7.307.el8_9.x86_64 root=/dev/mapper/rhel-root ro crashkernel=auto resume=/dev/mapper/rhel-swap rd.lvm.lv=rhel/root rd.lvm.lv=rhel/swap rhgb quiet igb.max_vfs=2 intel_iommu=on iommu=pt mitigations=off cgroup_memory=1 cgroup_enable=memory mce=off idle=poll hugepagesz=1G hugepa       ages=40 hugepagesz=2M hugepages=0 default_hugepagesz=1G selinux=0 enforcing=0 nmi_watchdog=0 softlockup_panic=0 audit=0 skew_tick=1 rcu_nocb_poll cgroup_disable=m       memory kthread_cpus=14-15 skew_tick=1 isolcpus=managed_irq,domain,0-8 nohz_full=0-8 rcu_nocbs=0-8 intel_pstate=disable nosoftlockup tsc=nowatchdog skew_tick=1 tsc       c=reliable rcupdate.rcu_normal_after_boot=1 isolcpus=managed_irq,domain,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 intel_pstate=disable nosoftlockup
