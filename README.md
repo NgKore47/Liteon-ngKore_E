@@ -34,6 +34,8 @@
 13. [5G Core deployment](#14-run-oai-gnb)
 14. [Run OAI gNB](#14-run-oai-gnb)
 15. [O-RU commands](#15-o-ru-commands)
+
+![Arch](images/liteon-oai-7.2-architecture.png)  
 # 1. Hardware Info
 The hardware on which we have tried this tutorial:
 
