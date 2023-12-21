@@ -266,6 +266,8 @@ bash ./rhel-packages/dependency_lib_8.sh
 
 ```bash
 bash ./rhel-packages/install_ninja.sh
+# or
+dnf install ninja-build
 ```
 
 # 5. SCTP installation
@@ -276,10 +278,17 @@ sudo yum install kernel-modules-extra-4.18.0-477.27.1.el8_8.x86_64 -y
 ```bash
 yum install -y lksctp-tools lksctp-tools-devel lksctp-tools-doc
 ```
+
 Add `sctp` to `/etc/modules-load.d/` to load sctp before systemd-sysctl.service during boot. Loading sctp before systemd-sysctl.service allows the sctp sysctl.conf settings to be effective
 
-```
-# cat /etc/modules-load.d/sctp.conf
+```bash
+cd /etc/modules-load.d/
+# If sctp.conf does not exist, create one
+vim sctp.conf
+# Add --> sctp to the file i.e sctp.conf
+
+# Check the file, desired output should be like:
+cat /etc/modules-load.d/sctp.conf
 sctp
 ```
 
@@ -346,11 +355,9 @@ the above command should give the following output:
 
 ```bash
 git clone https://github.com/NgKore47/liteon-phy.git
-cd liteon-phy
-git checkout oran_e_maintenance_release_v1.0
-# git apply phy_final.patch
+mv liteon-phy/ phy/
 ```
-> **Note:** In this liteon-phy repo, the patch file is already applied. You need not to apply it again.
+> **Note:** In this liteon-phy repo, the patch file(phy_final.patch) is already applied. You need not to apply it again.
 
 
 ### Export the the path:
