@@ -188,9 +188,13 @@ void nr_feptx_prec(RU_t *ru,int frame_tx,int tti_tx) {
 
     if (nr_slot_select(cfg,frame_tx,slot_tx) == NR_UPLINK_SLOT) return;
 
-    if (ru->do_precoding == 0 || (ru->nb_tx == 1 && ru->nb_log_antennas == 1)) {
-       for (i=0;i<ru->nb_log_antennas; ++i) 
-	  ru->common.txdataF_BF[i] = &gNB->common_vars.txdataF[i][txdataF_offset];
+    if (!ru->do_precoding || (ru->nb_tx == 1 && ru->nb_log_antennas == 1)) {
+      for (i = 0; i < ru->nb_log_antennas; ++i) {
+        //ru->common.txdataF_BF[i] = (int32_t *)&gNB->common_vars.txdataF[i][txdataF_offset];
+        memcpy(ru->common.txdataF_BF[i],
+               &gNB->common_vars.txdataF[i][txdataF_offset],
+               fp->samples_per_slot_wCP*sizeof(int32_t));
+      }
     }
     else {
       for(i=0; i<ru->nb_log_antennas; ++i) {

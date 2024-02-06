@@ -44,8 +44,8 @@
 
 extern PHY_VARS_NR_UE ***PHY_vars_UE_g;
 
-const char *dl_pdu_type[]={"DCI", "DLSCH", "RA_DLSCH", "SI_DLSCH", "P_DLSCH", "CSI_RS", "CSI_IM", "TA"};
-const char *ul_pdu_type[]={"PRACH", "PUCCH", "PUSCH", "SRS"};
+const char *const dl_pdu_type[] = {"DCI", "DLSCH", "RA_DLSCH", "SI_DLSCH", "P_DLSCH", "CSI_RS", "CSI_IM", "TA"};
+const char *const ul_pdu_type[] = {"PRACH", "PUCCH", "PUSCH", "SRS"};
 queue_t nr_rx_ind_queue;
 queue_t nr_crc_ind_queue;
 queue_t nr_uci_ind_queue;
@@ -82,16 +82,8 @@ static void free_uci_inds(nfapi_nr_uci_indication_t *uci_ind)
     {
         if (uci_ind->uci_list[k].pdu_type == NFAPI_NR_UCI_FORMAT_0_1_PDU_TYPE)
         {
-            nfapi_nr_uci_pucch_pdu_format_0_1_t *pdu_0_1 = &uci_ind->uci_list[k].pucch_pdu_format_0_1;
-            free(pdu_0_1->sr);
-            pdu_0_1->sr = NULL;
-            if (pdu_0_1->harq)
-            {
-                free(pdu_0_1->harq->harq_list);
-                pdu_0_1->harq->harq_list = NULL;
-            }
-            free(pdu_0_1->harq);
-            pdu_0_1->harq = NULL;
+            //nfapi_nr_uci_pucch_pdu_format_0_1_t *pdu_0_1 = &uci_ind->uci_list[k].pucch_pdu_format_0_1;
+            // Warning: pdu_0_1 is unused
         }
         if (uci_ind->uci_list[k].pdu_type == NFAPI_NR_UCI_FORMAT_2_3_4_PDU_TYPE)
         {
@@ -259,10 +251,8 @@ int8_t nr_ue_scheduled_response_stub(nr_scheduled_response_t *scheduled_response
                 if (mac->nr_ue_emul_l1.num_harqs > 0) {
                   int harq_index = 0;
                   pdu_0_1->pduBitmap = 2; // (value->pduBitmap >> 1) & 0x01) == HARQ and (value->pduBitmap) & 0x01) == SR
-                  pdu_0_1->harq = CALLOC(1, sizeof(*pdu_0_1->harq));
-                  pdu_0_1->harq->num_harq = mac->nr_ue_emul_l1.num_harqs;
-                  pdu_0_1->harq->harq_confidence_level = 0;
-                  pdu_0_1->harq->harq_list = CALLOC(pdu_0_1->harq->num_harq, sizeof(*pdu_0_1->harq->harq_list));
+                  pdu_0_1->harq.num_harq = mac->nr_ue_emul_l1.num_harqs;
+                  pdu_0_1->harq.harq_confidence_level = 0;
                   int harq_pid = -1;
                   for (int k = 0; k < NR_MAX_HARQ_PROCESSES; k++) {
                     if (mac->nr_ue_emul_l1.harq[k].active &&
@@ -270,8 +260,8 @@ int8_t nr_ue_scheduled_response_stub(nr_scheduled_response_t *scheduled_response
                         mac->nr_ue_emul_l1.harq[k].active_dl_harq_slot == uci_ind->slot) {
                       mac->nr_ue_emul_l1.harq[k].active = false;
                       harq_pid = k;
-                      AssertFatal(harq_index < pdu_0_1->harq->num_harq, "Invalid harq_index %d\n", harq_index);
-                      pdu_0_1->harq->harq_list[harq_index].harq_value = !mac->dl_harq_info[k].ack;
+                      AssertFatal(harq_index < pdu_0_1->harq.num_harq, "Invalid harq_index %d\n", harq_index);
+                      pdu_0_1->harq.harq_list[harq_index].harq_value = !mac->dl_harq_info[k].ack;
                       harq_index++;
                     }
                   }
@@ -301,13 +291,12 @@ int8_t nr_ue_scheduled_response_stub(nr_scheduled_response_t *scheduled_response
   return 0;
 }
 
-
-void configure_dlsch(NR_UE_DLSCH_t *dlsch0,
-                     NR_DL_UE_HARQ_t *harq_list,
-                     fapi_nr_dl_config_dlsch_pdu_rel15_t *dlsch_config_pdu,
-                     module_id_t module_id,
-                     int rnti) {
-
+static void configure_dlsch(NR_UE_DLSCH_t *dlsch0,
+                            NR_DL_UE_HARQ_t *harq_list,
+                            fapi_nr_dl_config_dlsch_pdu_rel15_t *dlsch_config_pdu,
+                            module_id_t module_id,
+                            int rnti)
+{
   const uint8_t current_harq_pid = dlsch_config_pdu->harq_process_nbr;
   dlsch0->active = true;
   dlsch0->rnti = rnti;
@@ -330,7 +319,6 @@ void configure_dlsch(NR_UE_DLSCH_t *dlsch0,
     update_harq_status(module_id, current_harq_pid, dlsch0_harq->ack);
   }
 }
-
 
 void configure_ta_command(PHY_VARS_NR_UE *ue, fapi_nr_ta_command_pdu *ta_command_pdu)
 {
@@ -441,7 +429,7 @@ int8_t nr_ue_scheduled_response(nr_scheduled_response_t *scheduled_response){
           case FAPI_NR_DL_CONFIG_TYPE_RA_DLSCH: {
             dlsch_config_pdu = &dl_config->dl_config_list[i].dlsch_config_pdu.dlsch_config_rel15;
             NR_UE_DLSCH_t *dlsch0 = &((nr_phy_data_t *)scheduled_response->phy_data)->dlsch[0];
-            dlsch0->rnti_type = _RA_RNTI_;
+            dlsch0->rnti_type = TYPE_RA_RNTI_;
             dlsch0->dlsch_config = *dlsch_config_pdu;
             configure_dlsch(dlsch0, PHY_vars_UE_g[module_id][cc_id]->dl_harq_processes[0], dlsch_config_pdu, module_id,
                             dl_config->dl_config_list[i].dlsch_config_pdu.rnti);
@@ -449,7 +437,7 @@ int8_t nr_ue_scheduled_response(nr_scheduled_response_t *scheduled_response){
           case FAPI_NR_DL_CONFIG_TYPE_SI_DLSCH: {
             dlsch_config_pdu = &dl_config->dl_config_list[i].dlsch_config_pdu.dlsch_config_rel15;
             NR_UE_DLSCH_t *dlsch0 = &((nr_phy_data_t *)scheduled_response->phy_data)->dlsch[0];
-            dlsch0->rnti_type = _SI_RNTI_;
+            dlsch0->rnti_type = TYPE_SI_RNTI_;
             dlsch0->dlsch_config = *dlsch_config_pdu;
             configure_dlsch(dlsch0, PHY_vars_UE_g[module_id][cc_id]->dl_harq_processes[0], dlsch_config_pdu, module_id,
                             dl_config->dl_config_list[i].dlsch_config_pdu.rnti);
@@ -457,7 +445,7 @@ int8_t nr_ue_scheduled_response(nr_scheduled_response_t *scheduled_response){
           case FAPI_NR_DL_CONFIG_TYPE_DLSCH: {
             dlsch_config_pdu = &dl_config->dl_config_list[i].dlsch_config_pdu.dlsch_config_rel15;
             NR_UE_DLSCH_t *dlsch0 = &((nr_phy_data_t *)scheduled_response->phy_data)->dlsch[0];
-            dlsch0->rnti_type = _C_RNTI_;
+            dlsch0->rnti_type = TYPE_C_RNTI_;
             dlsch0->dlsch_config = *dlsch_config_pdu;
             configure_dlsch(dlsch0, PHY_vars_UE_g[module_id][cc_id]->dl_harq_processes[0], dlsch_config_pdu, module_id,
                             dl_config->dl_config_list[i].dlsch_config_pdu.rnti);
@@ -650,7 +638,7 @@ int8_t nr_ue_phy_config_request(nr_phy_config_t *phy_config)
 {
   fapi_nr_config_request_t *nrUE_config = &PHY_vars_UE_g[phy_config->Mod_id][phy_config->CC_id]->nrUE_config;
   if(phy_config != NULL) {
-    memcpy(nrUE_config,&phy_config->config_req,sizeof(fapi_nr_config_request_t));
+    memcpy(nrUE_config, &phy_config->config_req, sizeof(fapi_nr_config_request_t));
     pushNotifiedFIFO(&PHY_vars_UE_g[phy_config->Mod_id][phy_config->CC_id]->phy_config_ind, newNotifiedFIFO_elt(1,0,NULL,NULL));
   }
   return 0;

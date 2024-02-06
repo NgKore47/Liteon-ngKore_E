@@ -19,8 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file openair2/GNB_APP/L1_nr_paramdef.f
- * \brief definition of configuration parameters for all eNodeB modules 
+/*! \file L1_nr_paramdef.h
+ * \brief definition of configuration parameters for all eNodeB modules
  * \author Francois TABURET, WEI-TAI CHEN
  * \date 2018
  * \version 0.1
@@ -85,7 +85,7 @@
   {CONFIG_STRING_L1_RX_THREAD_CORE,                    NULL,       0,         .uptr=NULL,           .defintval=-1,              TYPE_UINT,     0},          \
   {CONFIG_STRING_L1_TX_THREAD_CORE,                    NULL,       0,         .uptr=NULL,           .defintval=-1,              TYPE_UINT,     0},          \
   {CONFIG_STRING_L1_TX_AMP_BACKOFF_dB,                 HLP_L1TX_BO,0,         .uptr=NULL,           .defintval=36,              TYPE_UINT,     0},         \
-  {CONFIG_STRING_L1_PHASE_COMP,                        HLP_L1_PHASE_COMP,0,         .uptr=NULL,           .defintval=1,              TYPE_UINT,     0},         \
+  {CONFIG_STRING_L1_PHASE_COMP,                        HLP_L1_PHASE_COMP,PARAMFLAG_BOOL, .uptr=NULL,.defintval=1,               TYPE_UINT,     0},         \
 }
 // clang-format on
 #define L1_CC_IDX                                          0

@@ -21,9 +21,95 @@
 
 #include "openair2/RRC/NR_UE/rrc_proto.h"
 
-void nr_rrc_handle_timers(NR_UE_Timers_Constants_t *timers)
+void nr_rrc_SI_timers(NR_UE_RRC_SI_INFO *SInfo)
 {
-  // T304
+  // delete any stored version of a SIB after 3 hours
+  // from the moment it was successfully confirmed as valid
+  if (SInfo->sib1 && SInfo->sib1_timer >= 0) {
+    SInfo->sib1_timer += 10;
+    if (SInfo->sib1_timer > 10800000)
+      SInfo->sib1_timer = -1;
+  }
+  if (SInfo->sib2 && SInfo->sib2_timer >= 0) {
+    SInfo->sib2_timer += 10;
+    if (SInfo->sib2_timer > 10800000)
+      SInfo->sib2_timer = -1;
+  }
+  if (SInfo->sib3 && SInfo->sib3_timer >= 0) {
+    SInfo->sib3_timer += 10;
+    if (SInfo->sib3_timer > 10800000)
+      SInfo->sib3_timer = -1;
+  }
+  if (SInfo->sib4 && SInfo->sib4_timer >= 0) {
+    SInfo->sib4_timer += 10;
+    if (SInfo->sib4_timer > 10800000)
+      SInfo->sib4_timer = -1;
+  }
+  if (SInfo->sib5 && SInfo->sib5_timer >= 0) {
+    SInfo->sib5_timer += 10;
+    if (SInfo->sib5_timer > 10800000)
+      SInfo->sib5_timer = -1;
+  }
+  if (SInfo->sib6 && SInfo->sib6_timer >= 0) {
+    SInfo->sib6_timer += 10;
+    if (SInfo->sib6_timer > 10800000)
+      SInfo->sib6_timer = -1;
+  }
+  if (SInfo->sib7 && SInfo->sib7_timer >= 0) {
+    SInfo->sib7_timer += 10;
+    if (SInfo->sib7_timer > 10800000)
+      SInfo->sib7_timer = -1;
+  }
+  if (SInfo->sib8 && SInfo->sib8_timer >= 0) {
+    SInfo->sib8_timer += 10;
+    if (SInfo->sib8_timer > 10800000)
+      SInfo->sib8_timer = -1;
+  }
+  if (SInfo->sib9 && SInfo->sib9_timer >= 0) {
+    SInfo->sib9_timer += 10;
+    if (SInfo->sib9_timer > 10800000)
+      SInfo->sib9_timer = -1;
+
+  }
+  if (SInfo->sib10 && SInfo->sib10_timer >= 0) {
+    SInfo->sib10_timer += 10;
+    if (SInfo->sib10_timer > 10800000)
+      SInfo->sib10_timer = -1;
+  }
+  if (SInfo->sib11 && SInfo->sib11_timer >= 0) {
+    SInfo->sib11_timer += 10;
+    if (SInfo->sib11_timer > 10800000)
+      SInfo->sib11_timer = -1;
+  }
+  if (SInfo->sib12 && SInfo->sib12_timer >= 0) {
+    SInfo->sib12_timer += 10;
+    if (SInfo->sib12_timer > 10800000)
+      SInfo->sib12_timer = -1;
+  }
+  if (SInfo->sib13 && SInfo->sib13_timer >= 0) {
+    SInfo->sib13_timer += 10;
+    if (SInfo->sib13_timer > 10800000)
+      SInfo->sib13_timer = -1;
+  }
+  if (SInfo->sib14 && SInfo->sib14_timer >= 0) {
+    SInfo->sib14_timer += 10;
+    if (SInfo->sib14_timer > 10800000)
+      SInfo->sib14_timer = -1;
+  }
+}
+
+void nr_rrc_handle_timers(NR_UE_RRC_INST_t *rrc)
+{
+  NR_UE_Timers_Constants_t *timers = &rrc->timers_and_constants;
+
+  if (timers->T300_active == true) {
+    timers->T300_cnt += 10;
+    if(timers->T300_cnt >= timers->T300_k) {
+      timers->T300_active = false;
+      timers->T300_cnt = 0;
+      handle_t300_expiry(rrc);
+    }
+  }
   if (timers->T304_active == true) {
     timers->T304_cnt += 10;
     if(timers->T304_cnt >= timers->T304_k) {
@@ -41,6 +127,14 @@ void nr_rrc_handle_timers(NR_UE_Timers_Constants_t *timers)
       // handle detection of radio link failure
       // as described in 5.3.10.3 of 38.331
       AssertFatal(false, "Radio link failure! Not handled yet!\n");
+    }
+  }
+  if (timers->T311_active == true) {
+    timers->T311_cnt += 10;
+    if(timers->T311_cnt >= timers->T311_k) {
+      // Upon T311 expiry, the UE shall perform the actions upon going to RRC_IDLE
+      // with release cause 'RRC connection failure'
+      nr_rrc_going_to_IDLE(rrc, RRC_CONNECTION_FAILURE, NULL);
     }
   }
 }
@@ -297,7 +391,7 @@ void nr_rrc_handle_SetupRelease_RLF_TimersAndConstants(NR_UE_RRC_INST_t *rrc,
   switch(rlf_TimersAndConstants->present){
     case NR_SetupRelease_RLF_TimersAndConstants_PR_release :
       // use values for timers T301, T310, T311 and constants N310, N311, as included in ue-TimersAndConstants received in SIB1
-      set_rlf_sib1_timers_and_constants(tac, rrc->SInfo[0].sib1);
+      set_rlf_sib1_timers_and_constants(tac, rrc->perNB[0].SInfo.sib1);
       break;
     case NR_SetupRelease_RLF_TimersAndConstants_PR_setup :
       rlf_tac = rlf_TimersAndConstants->choice.setup;

@@ -249,7 +249,6 @@ typedef struct RU_proc_t_s {
   int instance_cnt_feptx;
   /// \internal This variable is protected by \ref mutex_ru_thread
   int instance_cnt_ru;
-  /// This varible is protected by \ref mutex_emulatedRF
   int instance_cnt_emulateRF;
   /// pthread structure for RU FH processing thread
   pthread_t pthread_FH;
@@ -694,7 +693,6 @@ typedef enum {
   OAI_IF4p5_only    =1,
   OAI_IF5_and_IF4p5 =2,
   MBP_IF5           =3,
-  ORAN_only      =4,  
   MAX_FH_FMTs       =4
 } FH_fmt_options_t;
 
