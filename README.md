@@ -539,5 +539,8 @@ devmem 0x8000201C 32 0x00000001
 
 <hr>
 
-### Official Readme
-Here is the official readme by OAI: [here](./Official_README.md)
+### Additional Links
+
+- Here is the official readme by OAI: [here](./Official_README.md)
+- Here is the readme for RHEL : [here](./Rhel_README.md)
+- Here is the ERROR.md file: [here](./ERROR.md)
