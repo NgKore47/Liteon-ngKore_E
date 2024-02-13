@@ -1,20 +1,23 @@
 
 **Table of Contents**
 1. [Hardware Info](#1-hardware-info)
+   - [2 NUMA Node System](#2-numa-node-system-ie-server-two)
+   - [1 NUMA Node System](#1-numa-node-system-ie-server-seven)
 2. [Real-Time Kernel](#2-real-time-kernel)
 3. [CPU allocation & Grub Update](#3-cpu-allocation--grub-update)
 4. [Required Package Installation](#4-required-package-installation)
-5. [SCTP installation](#5-sctp-installation)
-6. [DPDK(Data Plane Development Kit) 20.11.7](#6-dpdkdata-plane-development-kit-20117)
-7. [OSC-PHY installation](#7-osc-phy-installation)
-8. [Build OAI gNB](#8-build-oai-gnb)
-9. [Linux PTP installation](#9-linux-ptp-installation)
-10. [Bind devices](#10-bind-devices)
-11. [Configure Server and OAI gNB](#11-configure-server-and-oai-gnb)
-12. [Cpu Frequency Adjustment](#12-cpu-frequency-adjustment)
-13. [5G Core deployment](#14-run-oai-gnb)
-14. [Run OAI gNB](#14-run-oai-gnb)
-15. [O-RU commands](#15-o-ru-commands)
+5. [DPDK(Data Plane Development Kit) 20.11.7](#5-dpdkdata-plane-development-kit-20117)
+6. [OSC-PHY installation](#6-osc-phy-installation)
+7. [Build OAI gNB](#7-build-oai-gnb)
+8. [Linux PTP installation](#8-linux-ptp-installation)
+9. [Bind devices](#9-bind-devices)
+10. [Configure Server and OAI gNB](#10-configure-server-and-oai-gnb)
+11. [Cpu Frequency Adjustment](#11-cpu-frequency-adjustment)
+12. [5G Core deployment](#12-5g-core-deployment)
+13. [Run OAI gNB](#13-run-oai-gnb)
+    - [4T4R](#run-oai-gnb-for-liteon-4t4r)
+    - [2T2R](#run-oai-gnb-for-liteon-2t2r)
+14. [O-RU commands](#14-o-ru-commands)
 
 ![Arch](images/liteon-oai-7.2-architecture.png)  
 # 1. Hardware Info
@@ -30,9 +33,10 @@ For further hardware info check out this file: [HW-info-NUMA-2](./hwinfo_2_NUMA.
 
 ### 1 NUMA Node system i.e server `seven`
 
-|Hardware (CPU,RAM)                          |Operating System (kernel)                  |NIC (Vendor,Driver)                     | Server Number |
+|Hardware (CPU,RAM)                          |Operating System (kernel)                  |NIC (Vendor,Driver,Firmware)                     | Server Number |
 |--------------------------------------------|----------------------------------|-------------------------------------------------|------|
-| Intel(R) Xeon(R) Gold 6354, 18-Core, 1 nodes | RHEL 8.7 (with rtk installed) | Intel XXV710 for 10GbE SFP+,i40e | server 7 |
+| Intel(R) Xeon(R) Gold 6354, 18-Core, 1 nodes | UBUNTU 22.04.2 (with rtk installed) | Intel XXV710 for 10GbE SFP+,i40e,6.80 0x80003d05 1.2007.0 | server 7 |
+| Intel(R) Xeon(R) Gold 6354, 18-Core, 1 nodes | UBUNTU 22.04.2 (with rtk installed) | Intel E810 for 10GbE SFP+,ice,4.00 0x8001184e 1.3236.0 | server 7 |
 
 For further hardware info check out this file: [HW-info-NUMA-1](./hwinfo_1_NUMA.txt)
 
@@ -234,7 +238,7 @@ sudo apt install linux-tools-$(uname -r)
 ```
 
 
-# 6. DPDK(Data Plane Development Kit) 20.11.7
+# 5. DPDK(Data Plane Development Kit) 20.11.7
 
 ```bash
 wget http://fast.dpdk.org/rel/dpdk-20.11.7.tar.xz
@@ -245,14 +249,14 @@ sudo ninja install -C build
 ```
 > Note: DPDK build process will take a good time to complete.
 
-After DPDK has been built successfully, execute the following commands.
+* After DPDK has been built successfully, execute the following commands.
 
 ```bash
 sudo echo "/usr/local/lib" > /etc/ld.so.conf.d/local-lib.conf
 sudo echo "/usr/local/lib64" >> /etc/ld.so.conf.d/local-lib.conf
 sudo ldconfig -v | grep rte_
 ```
-export the following path
+* Export the following path
 
 ```bash
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib64/pkgconfig/
@@ -268,13 +272,12 @@ seven@seven:~$ pkg-config --libs libdpdk --static
 ```
 
 
-# 7. OSC-PHY installation
+# 6. OSC-PHY installation
 
 ```bash
 git clone -b fhi_4t_4r https://github.com/NgKore47/Liteon-ngKore_E.git
 cd Liteon-ngKore_E/
 cd phy/
-git checkout oran_e_maintenance_release_v1.0
 git apply ../openairinterface5g/cmake_targets/tools/oran_fhi_integration_patches/E/oaioran_E.patch
 cd fhi_lib/lib/
 
@@ -287,7 +290,7 @@ make XRAN_LIB_SO=1
 ```
 > **Note:** In this liteon-phy repo, the patch file(phy_final.patch) is already applied. You need not to apply it again.
 
-##### In case of any error related to SDK, export the following path and try to run `make XRAN_LIB_SO=1` again :
+#### In case of any error related to SDK, export the following path and try to run `make XRAN_LIB_SO=1` again :
 ```bash
 export XRAN_LIB_DIR=/home/$(hostname)/phy/fhi_lib/lib/build
 export XRAN_DIR=/home/$(hostname)/phy/fhi_lib
@@ -304,7 +307,7 @@ GTEST_ROOT is not set. Unit tests are not compiled
 "echo "GTEST_ROOT is not set. Unit tests are not compiled"" command exited with code 0.
 ```
 
-# 8. Build OAI gNB
+# 7. Build OAI gNB
 
 ### Build OAI
 ```bash
@@ -313,12 +316,11 @@ sudo apt install -y libnuma-dev
 export PKG_CONFIG_PATH=/opt/dpdk/lib64/pkgconfig/
 
 ./build_oai -I  # if you never installed OAI, use this command once before the next line
-./build_oai --gNB --ninja -t oran_fhlib_5g --cmake-opt -Dxran_LOCATION=$HOME/phy/fhi_lib/lib
+./build_oai --gNB --ninja -t oran_fhlib_5g --cmake-opt -Dxran_LOCATION=$HOME/Liteon-ngKore_E/phy/fhi_lib/lib
 
 #You can optionally check that everything has been linked properly with:
 ldd ran_build/build/liboran_fhlib_5g.so
 ```
-> Logs of build : here
 
 
 ### Copy the `libxran.xo`
@@ -327,7 +329,7 @@ sudo cp /home/$(hostname)/phy/fhi_lib/lib/build/libxran.so /usr/local/lib
 sudo cp /home/$(hostname)/phy/fhi_lib/lib/build/libxran.so /home/$(hostname)/Liteon-ngKore_E/cmake_targets/ran_build/build
 ```
 
-# 9. Linux PTP installation
+# 8. Linux PTP installation
 
 For this tutorial we are using `Fibrolan Falcon-Rx` C1 & C3 both can be used.<br>
 While using C1: `ens1f1` is connected with Fibrolan and `ens1f0` is directly connected with Liteon O-RU.<br>
@@ -366,7 +368,7 @@ sudo ./phc2sys -w -m -s ens1f0 -R 8 -f configs/c1.cfg
 > In Case of NIC E810, set `x_timestamp_timeout`  to  `100` in `configs/c1.cfg` file.
 
 
-# 10. Bind devices
+# 9. Bind devices
 **Note:** Same interface `ens1f0` will be used here.
 
 > **NOTE:**  You must be super-user
@@ -392,7 +394,7 @@ sudo ethtool -G ens1f0 rx 4096 tx 4096
 ```
 > **NOTE:** Use `ethtoog -g <interface_name>` to see max rx and tx
 
-# 11. Configure Server and OAI gNB
+# 10. Configure Server and OAI gNB
 
 ### Check the following this in the `mwc_20899_newfhi_E_3450.conf` file
 * The `PLMN` section shall match the one defined in the AMF
@@ -441,19 +443,18 @@ dpdk_devices = ("0000:18:01.0", "0000:18:01.1");
       kbar = 0;
     };
 ``` 
-> **NOTE:** Here is more detaild `patch` file: [click here](./logs/git_diff.patch)
-## 12. Cpu Frequency Adjustment:
+> **NOTE:** Here is more detailed `git_diff.patch` file: [click here](./logs/git_diff.patch)
 
-Set the cpu on maximum frequency:
+# 11. Cpu Frequency Adjustment:
+
+* Set the cpu on maximum frequency:
 
 ```bash
-
 sudo cpupower frequency-set -g performance
 sudo cpupower idle-set -D 0
 ```
 
-In this server 3.1 GHz is the max freq that cpu supports
-
+* In this server 3.1 GHz is the max freq that cpu supports
 
 ```bash
 sudo cpupower frequency-set -u 3100000
@@ -472,7 +473,7 @@ sudo cpupower idle-set -E
 > You can also see the current frequency using: `cpupower frequency-info `<br>
 > Also to see temprature of system use: `sensors`
 
-# 13. 5G Core deployment
+# 12. 5G Core deployment
 
 For 5G core deployment refer this repo:
 [Ngkore-CN5G](https://github.com/NgKore47/Ngkore-CN5G.git)
@@ -486,7 +487,9 @@ sudo ip route add 192.168.70.128/26 via 192.168.1.185 dev enp177s0f0
 ```
 where  `enp177s0f0` is the interface of this system which will be connected to the 5G Core and `192.168.1.185` is the ip of the server on which 5G Core is running.
 
-# 14. Run OAI gNB for LiteOn 4T4R
+# 13. Run OAI gNB
+
+## Run OAI gNB for LiteOn 4T4R
 
 ```bash
 cd ~/Liteon-ngKore_E/cmake_targets/ran_build/build/
@@ -499,10 +502,10 @@ sudo ./nr-softmodem -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band
 
 > **NOTE:** Make sure to change the cores according to your server specs.
 
-The logs should be something like this: [nr-softmodem](./logs/ubuntu%2022%20liteon%204t4r%20develop%20-->%20logs%20when%20UE%20is%20near(UE%20disconnect%20after%201%20min))
+The logs should be something like this for 4T4R: [nr-softmodem](./logs/ubuntu%2022%20liteon%204t4r%20develop%20-->%20logs%20when%20UE%20is%20near(UE%20disconnect%20after%201%20min))
 
 
-# 14. Run OAI gNB for LiteOn 4T4R
+## Run OAI gNB for LiteOn 2T2R
 
 ```bash
 cd ~/Liteon-ngKore_E/cmake_targets/ran_build/build/
@@ -513,7 +516,15 @@ sudo ./nr-softmodem -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band
 sudo ./nr-softmodem -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.273prb.fhi72.2x2-liteon.conf --sa --reorder-thread-disable 1 --thread-pool 30,31,32,33,34,35,36,36,37
 ```
 
-# 15. O-RU commands
+> **NOTE:** Make sure to change the cores according to your server specs.
+
+The logs should be something like this for 2T2R: [nr-softmodem](./logs/ubuntu%2022%20liteon%202t2r%20develop)
+
+#### Difference betweem 4t4r and 2t2r conf file:
+- Here is the difference between the 4t4r and 2t2r radio file: https://www.diffchecker.com/rWA7tV4R/
+
+
+# 14. O-RU commands
 
 After every reboot of RU, run the following commands:
 
@@ -524,3 +535,9 @@ devmem 0x80001014 32 0x00050004
 devmem 0x80001018 32 0x00070006
 devmem 0x8000201C 32 0x00000001
 ```
+
+
+<hr>
+
+### Official Readme
+Here is the official readme by OAI: [here](./Official_README.md)
