@@ -1,5 +1,5 @@
 Updating Subscription Management repositories.
-Last metadata expiration check: 0:49:05 ago on Tue 07 Nov 2023 07:44:01 AM IST.
+Last metadata expiration check: 2:53:56 ago on Wednesday 24 January 2024 02:19:22 AM EST.
 Package bison-3.0.4-10.el8.x86_64 is already installed.
 Package flex-2.6.1-9.el8.x86_64 is already installed.
 Dependencies resolved.
@@ -8,6 +8,14 @@ Complete!
 Cloning into '/tmp/asn1c'...
 Already on 'vlm_master'
 Your branch is up to date with 'origin/vlm_master'.
+commit 648f0bc38d3ba4316e5e5a7c20db06c9c6786d0d
+Merge: 7909b54f c7739065
+Author: Mouse <mouse07410@users.noreply.github.com>
+Date:   Tue Jan 23 19:19:49 2024 -0500
+
+    Merge pull request #173 from v0-e/doc-update
+    
+    Update main README with supported encoding rules
 autoreconf: Entering directory `.'
 autoreconf: configure.ac: not using Gettext
 autoreconf: running: aclocal -I m4
@@ -300,11 +308,11 @@ make[3]: Entering directory '/tmp/asn1c/asn1-tools/unber'
   CC       libasn1_unber_tool.lo
 In file included from libasn1_unber_tool.c:41:
 ../../skeletons/INTEGER.c: In function ‘asn_imax2INTEGER’:
-../../skeletons/INTEGER.c:364:29: warning: array subscript 0 is outside array bounds of ‘intmax_t[1]’ {aka ‘long int[1]’} [-Warray-bounds]
-  364 |         for(bp = buf, pend1 += add; p != pend1; p += add)
+../../skeletons/INTEGER.c:366:29: warning: array subscript 0 is outside array bounds of ‘intmax_t[1]’ {aka ‘long int[1]’} [-Warray-bounds]
+  366 |         for(bp = buf, pend1 += add; p != pend1; p += add)
       |                       ~~~~~~^~~~~~
-../../skeletons/INTEGER.c:320:42: note: while referencing ‘value’
-  320 | asn_imax2INTEGER(INTEGER_t *st, intmax_t value) {
+../../skeletons/INTEGER.c:322:42: note: while referencing ‘value’
+  322 | asn_imax2INTEGER(INTEGER_t *st, intmax_t value) {
       |                                 ~~~~~~~~~^~~~~
   CCLD     libasn1-unber-tool.la
   CCLD     unber
@@ -487,11 +495,11 @@ make[2]: Entering directory '/tmp/asn1c/asn1-tools/unber'
   CC       libasn1_unber_tool.lo
 In file included from libasn1_unber_tool.c:41:
 ../../skeletons/INTEGER.c: In function ‘asn_imax2INTEGER’:
-../../skeletons/INTEGER.c:364:29: warning: array subscript 0 is outside array bounds of ‘intmax_t[1]’ {aka ‘long int[1]’} [-Warray-bounds]
-  364 |         for(bp = buf, pend1 += add; p != pend1; p += add)
+../../skeletons/INTEGER.c:366:29: warning: array subscript 0 is outside array bounds of ‘intmax_t[1]’ {aka ‘long int[1]’} [-Warray-bounds]
+  366 |         for(bp = buf, pend1 += add; p != pend1; p += add)
       |                       ~~~~~~^~~~~~
-../../skeletons/INTEGER.c:320:42: note: while referencing ‘value’
-  320 | asn_imax2INTEGER(INTEGER_t *st, intmax_t value) {
+../../skeletons/INTEGER.c:322:42: note: while referencing ‘value’
+  322 | asn_imax2INTEGER(INTEGER_t *st, intmax_t value) {
       |                                 ~~~~~~~~~^~~~~
   CCLD     libasn1-unber-tool.la
   CCLD     unber
@@ -536,14 +544,14 @@ make[1]: Entering directory '/tmp/asn1c/skeletons'
 make[2]: Entering directory '/tmp/asn1c/skeletons'
 make[2]: Nothing to be done for 'install-exec-am'.
  /bin/mkdir -p '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./README ./ANY_aper.c ./ANY_ber.c ./ANY.c ./ANY.h ./ANY_jer.c ./ANY_uper.c ./ANY_xer.c ./aper_decoder.c ./aper_decoder.h ./aper_encoder.c ./aper_encoder.h ./aper_opentype.c ./aper_opentype.h ./aper_support.c ./aper_support.h ./asn_application.c ./asn_application.h ./asn_bit_data.c ./asn_bit_data.h ./asn_codecs.h ./asn_codecs_prim_ber.c ./asn_codecs_prim.c ./asn_codecs_prim.h ./asn_codecs_prim_xer.c ./asn_config.h ./asn_internal.c ./asn_internal.h ./asn_ioc.h ./asn_random_fill.c ./asn_random_fill.h ./asn_SEQUENCE_OF.c ./asn_SEQUENCE_OF.h ./asn_SET_OF.c ./asn_SET_OF.h ./asn_system.h ./ber_decoder.c ./ber_decoder.h ./ber_tlv_length.c ./ber_tlv_length.h '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./ber_tlv_tag.c ./ber_tlv_tag.h ./BIT_STRING.c ./BIT_STRING.h ./BIT_STRING_jer.c ./BIT_STRING_oer.c ./BIT_STRING_print.c ./BIT_STRING_rfill.c ./BIT_STRING_uper.c ./BIT_STRING_xer.c ./BMPString.c ./BMPString.h ./BMPString_jer.c ./BMPString_print.c ./BMPString_xer.c ./BOOLEAN_aper.c ./BOOLEAN_ber.c ./BOOLEAN.c ./BOOLEAN.h ./BOOLEAN_jer.c ./BOOLEAN_oer.c ./BOOLEAN_print.c ./BOOLEAN_rfill.c ./BOOLEAN_uper.c ./BOOLEAN_xer.c ./constraints.c ./constraints.h ./constr_CHOICE_aper.c ./constr_CHOICE_ber.c ./constr_CHOICE.c ./constr_CHOICE.h ./constr_CHOICE_jer.c ./constr_CHOICE_oer.c ./constr_CHOICE_print.c ./constr_CHOICE_rfill.c ./constr_CHOICE_uper.c ./constr_CHOICE_xer.c ./constr_SEQUENCE_aper.c ./constr_SEQUENCE_ber.c ./constr_SEQUENCE.c '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./constr_SEQUENCE.h ./constr_SEQUENCE_jer.c ./constr_SEQUENCE_oer.c ./constr_SEQUENCE_OF_aper.c ./constr_SEQUENCE_OF_ber.c ./constr_SEQUENCE_OF.c ./constr_SEQUENCE_OF.h ./constr_SEQUENCE_OF_jer.c ./constr_SEQUENCE_OF_uper.c ./constr_SEQUENCE_OF_xer.c ./constr_SEQUENCE_print.c ./constr_SEQUENCE_rfill.c ./constr_SEQUENCE_uper.c ./constr_SEQUENCE_xer.c ./constr_SET_ber.c ./constr_SET.c ./constr_SET.h ./constr_SET_jer.c ./constr_SET_OF_aper.c ./constr_SET_OF_ber.c ./constr_SET_OF.c ./constr_SET_OF.h ./constr_SET_OF_jer.c ./constr_SET_OF_oer.c ./constr_SET_OF_print.c ./constr_SET_OF_rfill.c ./constr_SET_OF_uper.c ./constr_SET_OF_xer.c ./constr_SET_print.c ./constr_SET_rfill.c ./constr_SET_xer.c ./constr_TYPE.c ./constr_TYPE.h ./converter-example.c ./der_encoder.c ./der_encoder.h ./ENUMERATED_aper.c ./ENUMERATED.c ./ENUMERATED.h ./ENUMERATED_oer.c '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./ENUMERATED_uper.c ./GeneralizedTime_ber.c ./GeneralizedTime.c ./GeneralizedTime.h ./GeneralizedTime_jer.c ./GeneralizedTime_print.c ./GeneralizedTime_rfill.c ./GeneralizedTime_xer.c ./GeneralString.c ./GeneralString.h ./GraphicString.c ./GraphicString.h ./IA5String.c ./IA5String.h ./INTEGER_aper.c ./INTEGER_ber.c ./INTEGER.c ./INTEGER.h ./INTEGER_jer.c ./INTEGER_oer.c ./INTEGER_print.c ./INTEGER_rfill.c ./INTEGER_uper.c ./INTEGER_xer.c ./ISO646String.c ./ISO646String.h ./jer_encoder.c ./jer_encoder.h ./NativeEnumerated_aper.c ./NativeEnumerated.c ./NativeEnumerated.h ./NativeEnumerated_jer.c ./NativeEnumerated_oer.c ./NativeEnumerated_uper.c ./NativeEnumerated_xer.c ./NativeInteger_aper.c ./NativeInteger_ber.c ./NativeInteger.c ./NativeInteger.h ./NativeInteger_jer.c '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./NativeInteger_oer.c ./NativeInteger_print.c ./NativeInteger_rfill.c ./NativeInteger_uper.c ./NativeInteger_xer.c ./NativeReal_aper.c ./NativeReal_ber.c ./NativeReal.c ./NativeReal.h ./NativeReal_jer.c ./NativeReal_oer.c ./NativeReal_print.c ./NativeReal_rfill.c ./NativeReal_uper.c ./NativeReal_xer.c ./NULL_aper.c ./NULL_ber.c ./NULL.c ./NULL.h ./NULL_jer.c ./NULL_oer.c ./NULL_print.c ./NULL_rfill.c ./NULL_uper.c ./NULL_xer.c ./NumericString.c ./NumericString.h ./ObjectDescriptor.c ./ObjectDescriptor.h ./OBJECT_IDENTIFIER.c ./OBJECT_IDENTIFIER.h ./OBJECT_IDENTIFIER_jer.c ./OBJECT_IDENTIFIER_print.c ./OBJECT_IDENTIFIER_rfill.c ./OBJECT_IDENTIFIER_xer.c ./OCTET_STRING_aper.c ./OCTET_STRING_ber.c ./OCTET_STRING.c ./OCTET_STRING.h ./OCTET_STRING_jer.c '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./OCTET_STRING_oer.c ./OCTET_STRING_print.c ./OCTET_STRING_rfill.c ./OCTET_STRING_uper.c ./OCTET_STRING_xer.c ./oer_decoder.c ./oer_decoder.h ./oer_encoder.c ./oer_encoder.h ./oer_support.c ./oer_support.h ./OPEN_TYPE_aper.c ./OPEN_TYPE_ber.c ./OPEN_TYPE.c ./OPEN_TYPE.h ./OPEN_TYPE_oer.c ./OPEN_TYPE_uper.c ./OPEN_TYPE_xer.c ./per_decoder.c ./per_decoder.h ./per_encoder.c ./per_encoder.h ./per_opentype.c ./per_opentype.h ./per_support.c ./per_support.h ./PrintableString.c ./PrintableString.h ./REAL_aper.c ./REAL.c ./REAL.h ./REAL_jer.c ./REAL_oer.c ./REAL_print.c ./REAL_rfill.c ./REAL_uper.c ./REAL_xer.c ./RELATIVE-OID.c ./RELATIVE-OID.h ./RELATIVE-OID_jer.c '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./RELATIVE-OID_print.c ./RELATIVE-OID_rfill.c ./RELATIVE-OID_xer.c ./T61String.c ./T61String.h ./TeletexString.c ./TeletexString.h ./UniversalString.c ./UniversalString.h ./UniversalString_jer.c ./UniversalString_print.c ./UniversalString_xer.c ./uper_decoder.c ./uper_decoder.h ./uper_encoder.c ./uper_encoder.h ./uper_opentype.c ./uper_opentype.h ./uper_support.c ./uper_support.h ./UTCTime.c ./UTCTime.h ./UTCTime_jer.c ./UTCTime_print.c ./UTCTime_rfill.c ./UTCTime_xer.c ./UTF8String.c ./UTF8String.h ./UTF8String_print.c ./UTF8String_rfill.c ./VideotexString.c ./VideotexString.h ./VisibleString.c ./VisibleString.h ./xer_decoder.c ./xer_decoder.h ./xer_encoder.c ./xer_encoder.h ./xer_support.c ./xer_support.h '/opt/asn1c/share/asn1c'
- /bin/install -c -m 644 ./file-dependencies '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./README ./ANY_aper.c ./ANY_ber.c ./ANY.c ./ANY.h ./ANY_jer.c ./ANY_uper.c ./ANY_xer.c ./aper_decoder.c ./aper_decoder.h ./aper_encoder.c ./aper_encoder.h ./aper_opentype.c ./aper_opentype.h ./aper_support.c ./aper_support.h ./asn_application.c ./asn_application.h ./asn_bit_data.c ./asn_bit_data.h ./asn_codecs.h ./asn_codecs_prim_ber.c ./asn_codecs_prim.c ./asn_codecs_prim.h ./asn_codecs_prim_jer.c ./asn_codecs_prim_xer.c ./asn_config.h ./asn_internal.c ./asn_internal.h ./asn_ioc.h ./asn_random_fill.c ./asn_random_fill.h ./asn_SEQUENCE_OF.c ./asn_SEQUENCE_OF.h ./asn_SET_OF.c ./asn_SET_OF.h ./asn_system.h ./ber_decoder.c ./ber_decoder.h ./ber_tlv_length.c '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./ber_tlv_length.h ./ber_tlv_tag.c ./ber_tlv_tag.h ./BIT_STRING.c ./BIT_STRING.h ./BIT_STRING_jer.c ./BIT_STRING_oer.c ./BIT_STRING_print.c ./BIT_STRING_rfill.c ./BIT_STRING_uper.c ./BIT_STRING_xer.c ./BMPString.c ./BMPString.h ./BMPString_jer.c ./BMPString_print.c ./BMPString_xer.c ./BOOLEAN_aper.c ./BOOLEAN_ber.c ./BOOLEAN.c ./BOOLEAN.h ./BOOLEAN_jer.c ./BOOLEAN_oer.c ./BOOLEAN_print.c ./BOOLEAN_rfill.c ./BOOLEAN_uper.c ./BOOLEAN_xer.c ./constraints.c ./constraints.h ./constr_CHOICE_aper.c ./constr_CHOICE_ber.c ./constr_CHOICE.c ./constr_CHOICE.h ./constr_CHOICE_jer.c ./constr_CHOICE_oer.c ./constr_CHOICE_print.c ./constr_CHOICE_rfill.c ./constr_CHOICE_uper.c ./constr_CHOICE_xer.c ./constr_SEQUENCE_aper.c ./constr_SEQUENCE_ber.c '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./constr_SEQUENCE.c ./constr_SEQUENCE.h ./constr_SEQUENCE_jer.c ./constr_SEQUENCE_oer.c ./constr_SEQUENCE_OF_aper.c ./constr_SEQUENCE_OF_ber.c ./constr_SEQUENCE_OF.c ./constr_SEQUENCE_OF.h ./constr_SEQUENCE_OF_jer.c ./constr_SEQUENCE_OF_uper.c ./constr_SEQUENCE_OF_xer.c ./constr_SEQUENCE_print.c ./constr_SEQUENCE_rfill.c ./constr_SEQUENCE_uper.c ./constr_SEQUENCE_xer.c ./constr_SET_ber.c ./constr_SET.c ./constr_SET.h ./constr_SET_jer.c ./constr_SET_OF_aper.c ./constr_SET_OF_ber.c ./constr_SET_OF.c ./constr_SET_OF.h ./constr_SET_OF_jer.c ./constr_SET_OF_oer.c ./constr_SET_OF_print.c ./constr_SET_OF_rfill.c ./constr_SET_OF_uper.c ./constr_SET_OF_xer.c ./constr_SET_print.c ./constr_SET_rfill.c ./constr_SET_xer.c ./constr_TYPE.c ./constr_TYPE.h ./converter-example.c ./der_encoder.c ./der_encoder.h ./ENUMERATED_aper.c ./ENUMERATED.c ./ENUMERATED.h '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./ENUMERATED_jer.c ./ENUMERATED_oer.c ./ENUMERATED_uper.c ./GeneralizedTime_ber.c ./GeneralizedTime.c ./GeneralizedTime.h ./GeneralizedTime_jer.c ./GeneralizedTime_print.c ./GeneralizedTime_rfill.c ./GeneralizedTime_xer.c ./GeneralString.c ./GeneralString.h ./GraphicString.c ./GraphicString.h ./IA5String.c ./IA5String.h ./INTEGER_aper.c ./INTEGER_ber.c ./INTEGER.c ./INTEGER.h ./INTEGER_jer.c ./INTEGER_oer.c ./INTEGER_print.c ./INTEGER_rfill.c ./INTEGER_uper.c ./INTEGER_xer.c ./ISO646String.c ./ISO646String.h ./jer_decoder.c ./jer_decoder.h ./jer_encoder.c ./jer_encoder.h ./jer_support.c ./jer_support.h ./NativeEnumerated_aper.c ./NativeEnumerated.c ./NativeEnumerated.h ./NativeEnumerated_jer.c ./NativeEnumerated_oer.c ./NativeEnumerated_uper.c '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./NativeEnumerated_xer.c ./NativeInteger_aper.c ./NativeInteger_ber.c ./NativeInteger.c ./NativeInteger.h ./NativeInteger_jer.c ./NativeInteger_oer.c ./NativeInteger_print.c ./NativeInteger_rfill.c ./NativeInteger_uper.c ./NativeInteger_xer.c ./NativeReal_aper.c ./NativeReal_ber.c ./NativeReal.c ./NativeReal.h ./NativeReal_jer.c ./NativeReal_oer.c ./NativeReal_print.c ./NativeReal_rfill.c ./NativeReal_uper.c ./NativeReal_xer.c ./NULL_aper.c ./NULL_ber.c ./NULL.c ./NULL.h ./NULL_jer.c ./NULL_oer.c ./NULL_print.c ./NULL_rfill.c ./NULL_uper.c ./NULL_xer.c ./NumericString.c ./NumericString.h ./ObjectDescriptor.c ./ObjectDescriptor.h ./OBJECT_IDENTIFIER.c ./OBJECT_IDENTIFIER.h ./OBJECT_IDENTIFIER_jer.c ./OBJECT_IDENTIFIER_print.c ./OBJECT_IDENTIFIER_rfill.c '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./OBJECT_IDENTIFIER_xer.c ./OCTET_STRING_aper.c ./OCTET_STRING_ber.c ./OCTET_STRING.c ./OCTET_STRING.h ./OCTET_STRING_jer.c ./OCTET_STRING_oer.c ./OCTET_STRING_print.c ./OCTET_STRING_rfill.c ./OCTET_STRING_uper.c ./OCTET_STRING_xer.c ./oer_decoder.c ./oer_decoder.h ./oer_encoder.c ./oer_encoder.h ./oer_support.c ./oer_support.h ./OPEN_TYPE_aper.c ./OPEN_TYPE_ber.c ./OPEN_TYPE.c ./OPEN_TYPE.h ./OPEN_TYPE_jer.c ./OPEN_TYPE_oer.c ./OPEN_TYPE_uper.c ./OPEN_TYPE_xer.c ./per_decoder.c ./per_decoder.h ./per_encoder.c ./per_encoder.h ./per_opentype.c ./per_opentype.h ./per_support.c ./per_support.h ./PrintableString.c ./PrintableString.h ./REAL_aper.c ./REAL.c ./REAL.h ./REAL_jer.c ./REAL_oer.c '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./REAL_print.c ./REAL_rfill.c ./REAL_uper.c ./REAL_xer.c ./RELATIVE-OID.c ./RELATIVE-OID.h ./RELATIVE-OID_jer.c ./RELATIVE-OID_print.c ./RELATIVE-OID_rfill.c ./RELATIVE-OID_xer.c ./T61String.c ./T61String.h ./TeletexString.c ./TeletexString.h ./UniversalString.c ./UniversalString.h ./UniversalString_jer.c ./UniversalString_print.c ./UniversalString_xer.c ./uper_decoder.c ./uper_decoder.h ./uper_encoder.c ./uper_encoder.h ./uper_opentype.c ./uper_opentype.h ./uper_support.c ./uper_support.h ./UTCTime.c ./UTCTime.h ./UTCTime_jer.c ./UTCTime_print.c ./UTCTime_rfill.c ./UTCTime_xer.c ./UTF8String.c ./UTF8String.h ./UTF8String_print.c ./UTF8String_rfill.c ./VideotexString.c ./VideotexString.h ./VisibleString.c '/opt/asn1c/share/asn1c'
+ /bin/install -c -m 644 ./VisibleString.h ./xer_decoder.c ./xer_decoder.h ./xer_encoder.c ./xer_encoder.h ./xer_support.c ./xer_support.h ./file-dependencies '/opt/asn1c/share/asn1c'
  /bin/mkdir -p '/opt/asn1c/share/asn1c'
  /bin/mkdir -p '/opt/asn1c/share/asn1c/standard-modules'
  /bin/install -c -m 644  standard-modules/README standard-modules/ASN1-Object-Identifier-Module.asn1 standard-modules/ASN1C-UsefulInformationObjectClasses.asn1 '/opt/asn1c/share/asn1c/standard-modules'

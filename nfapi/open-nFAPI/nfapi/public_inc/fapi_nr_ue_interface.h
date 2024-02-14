@@ -19,7 +19,7 @@
 #include <pthread.h>
 
 #include "stddef.h"
-#include "platform_types.h"
+#include "common/platform_types.h"
 #include "fapi_nr_ue_constants.h"
 #include "PHY/impl_defs_top.h"
 #include "PHY/impl_defs_nr.h"
@@ -348,6 +348,7 @@ typedef struct
   uint8_t  start_symbol_index;
   uint8_t  nr_of_symbols;
   uint32_t tbslbrm;
+  uint8_t ldpcBaseGraph;
   //Optional Data only included if indicated in pduBitmap
   nfapi_nr_ue_pusch_data_t pusch_data;
   nfapi_nr_ue_pusch_uci_t  pusch_uci;
@@ -425,7 +426,7 @@ typedef struct {
   uint8_t num_dci_options;  // Num DCIs the UE actually needs to decode (1 or 2)
   uint8_t dci_length_options[2];
   uint8_t dci_format_options[2];
-  uint8_t dci_type_options[2];
+  uint8_t ss_type_options[2];
 } fapi_nr_dl_config_dci_dl_pdu_rel15_t;
 
 typedef struct {
@@ -442,6 +443,9 @@ typedef struct {
   uint16_t start_rb;
   uint16_t number_symbols;
   uint16_t start_symbol;
+  // TODO this is a workaround to make it work
+  // implementation is also a bunch of workarounds
+  uint16_t rb_offset;
   uint16_t dlDmrsSymbPos;  
   uint8_t dmrsConfigType;
   uint8_t prb_bundling_size_ind;
@@ -488,6 +492,7 @@ typedef struct {
   uint16_t dlDmrsScramblingId;
   uint16_t pduBitmap;
   uint32_t k1_feedback;
+  uint8_t ldpcBaseGraph;
 } fapi_nr_dl_config_dlsch_pdu_rel15_t;
 
 typedef struct {
@@ -633,13 +638,12 @@ typedef struct
 
 typedef struct 
 {
-  fapi_nr_max_num_of_symbol_per_slot_t* max_num_of_symbol_per_slot_list;
+  fapi_nr_max_num_of_symbol_per_slot_t *max_num_of_symbol_per_slot_list;
 
 } fapi_nr_max_tdd_periodicity_t;
 
 typedef struct 
 {
-  uint8_t tdd_period;//DL UL Transmission Periodicity. Value:0: ms0p5 1: ms0p625 2: ms1 3: ms1p25 4: ms2 5: ms2p5 6: ms5 7: ms10 8: ms3 9: ms4
   uint8_t tdd_period_in_slots;
   fapi_nr_max_tdd_periodicity_t* max_tdd_periodicity_list;
 
@@ -660,7 +664,8 @@ typedef struct
 typedef struct 
 {
   uint8_t prach_sequence_length;//RACH sequence length. Only short sequence length is supported for FR2. [38.211, sec 6.3.3.1] Value: 0 = Long sequence 1 = Short sequence
-  uint8_t prach_sub_c_spacing;//Subcarrier spacing of PRACH. [38.211 sec 4.2] Value:0->4
+  uint8_t prach_sub_c_spacing; // Subcarrier spacing of PRACH. [38.211 sec 4.2] Value: 0: 15 kHz 1: 30 kHz 2: 60 kHz 3: 120 kHz
+                               // 4: 1.25 kHz 5: 5 kHz
   uint8_t restricted_set_config;//PRACH restricted set config Value: 0: unrestricted 1: restricted set type A 2: restricted set type B
   uint8_t num_prach_fd_occasions;//Corresponds to the parameter 𝑀 in [38.211, sec 6.3.3.2] which equals the higher layer parameter msg1FDM Value: 1,2,4,8
   fapi_nr_num_prach_fd_occasions_t* num_prach_fd_occasions_list;
@@ -670,7 +675,7 @@ typedef struct
 } fapi_nr_prach_config_t;
 
 typedef struct {
-  uint16_t target_Nid_cell;
+  int16_t target_Nid_cell;
 } fapi_nr_synch_request_t;
 
 typedef struct {
@@ -680,7 +685,8 @@ typedef struct {
   fapi_nr_cell_config_t cell_config;
   fapi_nr_ssb_config_t ssb_config;
   fapi_nr_ssb_table_t ssb_table;
-  fapi_nr_tdd_table_t tdd_table;
+  fapi_nr_tdd_table_t tdd_table_1;
+  fapi_nr_tdd_table_t *tdd_table_2;
   fapi_nr_prach_config_t prach_config;
 
 } fapi_nr_config_request_t;

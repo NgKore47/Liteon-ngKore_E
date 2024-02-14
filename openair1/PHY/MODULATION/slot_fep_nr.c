@@ -35,7 +35,7 @@
 #endif*/
 
 int nr_slot_fep(PHY_VARS_NR_UE *ue,
-                UE_nr_rxtx_proc_t *proc,
+                const UE_nr_rxtx_proc_t *proc,
                 unsigned char symbol,
                 c16_t rxdataF[][ue->frame_parms.samples_per_slot_wCP])
 {
@@ -114,7 +114,7 @@ int nr_slot_fep(PHY_VARS_NR_UE *ue,
 }
 
 int nr_slot_fep_init_sync(PHY_VARS_NR_UE *ue,
-                          UE_nr_rxtx_proc_t *proc,
+                          const UE_nr_rxtx_proc_t *proc,
                           unsigned char symbol,
                           int sample_offset,
                           bool pbch_decoded,
@@ -148,7 +148,7 @@ int nr_slot_fep_init_sync(PHY_VARS_NR_UE *ue,
   unsigned int rx_offset   = sample_offset + slot_offset;
   unsigned int abs_symbol  = Ns * frame_parms->symbols_per_slot + symbol;
   for (int idx_symb = Ns*frame_parms->symbols_per_slot; idx_symb <= abs_symbol; idx_symb++)
-    rx_offset += (abs_symbol%(0x7<<frame_parms->numerology_index)) ? nb_prefix_samples : nb_prefix_samples0;
+    rx_offset += (idx_symb%(0x7<<frame_parms->numerology_index)) ? nb_prefix_samples : nb_prefix_samples0;
   rx_offset += frame_parms->ofdm_symbol_size * symbol;
 
 #ifdef DEBUG_FEP
@@ -229,7 +229,7 @@ int nr_slot_fep_ul(NR_DL_FRAME_PARMS *frame_parms,
 {
   unsigned int nb_prefix_samples  = frame_parms->nb_prefix_samples;
   unsigned int nb_prefix_samples0 = frame_parms->nb_prefix_samples0;
-  
+
   dft_size_idx_t dftsize = get_dft(frame_parms->ofdm_symbol_size);
   // This is for misalignment issues
   int32_t tmp_dft_in[8192] __attribute__ ((aligned (32)));
