@@ -53,7 +53,7 @@ Install the real time kernel after the fresh OS installation.
 
 ```bash
 sudo pro attach C12BCiRPRPgoy53ukfYwgxjJbxQg4G
-pro enable realtime-kernel
+sudo pro enable realtime-kernel
 reboot now
 ```
 
@@ -70,7 +70,7 @@ Linux seven 5.15.0-1053-realtime #59-Ubuntu SMP PREEMPT_RT Fri Jan 12 20:29:00 U
 
 Change the boot order, if rtk does open by default: Use the following command for that:
 ```bash
-sudo grub2-set-default 0
+sudo grub-set-default 0
 ```
 
 Update all the packages now:
@@ -194,13 +194,13 @@ GRUB_CMDLINE_LINUX="igb.max_vfs=2 intel_iommu=on iommu=pt mitigations=off cgroup
 grub update
 
 ```bash
-sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 Change the kernel order to rtk before rebooting:
 
 ```bash
-sudo grub2-set-default 0
+sudo grub-set-default 0
 ```
 Reboot
 ```bash
@@ -210,16 +210,16 @@ sudo reboot
 After rebooting turn on th real time profile:
 
 ```bash
-apt install tuned
+sudo apt install tuned
 
 vim /etc/tuned/realtime-variables.conf 
 
 # uncomment isolated cores
-isolated_cores=0-17
+isolated_cores=0-10
 #save and exit 
 
 
-tuned-adm profile realtime
+sudo tuned-adm profile realtime
 ```
 
 Now check whether 40 hugepages are created or not:
@@ -232,8 +232,9 @@ grep HugePages /proc/meminfo
 
 ```bash
 sudo apt install wget xz-utils
+sudo apt install net-tools
 sudo apt install meson
-apt install pkg-config
+sudo apt install pkg-config
 sudo apt install linux-tools-$(uname -r)
 ```
 
@@ -252,6 +253,7 @@ sudo ninja install -C build
 * After DPDK has been built successfully, execute the following commands.
 
 ```bash
+sudo su
 sudo echo "/usr/local/lib" > /etc/ld.so.conf.d/local-lib.conf
 sudo echo "/usr/local/lib64" >> /etc/ld.so.conf.d/local-lib.conf
 sudo ldconfig -v | grep rte_
@@ -275,6 +277,16 @@ seven@seven:~$ pkg-config --libs libdpdk --static
 # 6. OSC-PHY installation
 
 ```bash
+
+########################################
+#             OFFICIAL WAY             #
+########################################
+# git clone https://gerrit.o-ran-sc.org/r/o-du/phy.git ~/phy
+# cd ~/phy
+# git checkout oran_e_maintenance_release_v1.0
+########################################
+
+
 git clone -b fhi_4t_4r https://github.com/NgKore47/Liteon-ngKore_E.git
 cd Liteon-ngKore_E/
 cd phy/
@@ -282,8 +294,8 @@ git apply ../openairinterface5g/cmake_targets/tools/oran_fhi_integration_patches
 cd fhi_lib/lib/
 
 #set env variables
-export RTE_SDK=/home/seven/dpdk-stable-20.11.7/ 
-export XRAN_DIR=/home/seven/phy/fhi_lib
+export RTE_SDK=/home/$(hostname)/dpdk-stable-20.11.7/ 
+export XRAN_DIR=/home/$(hostname)/phy/fhi_lib
 
 make clean
 make XRAN_LIB_SO=1
@@ -316,7 +328,7 @@ sudo apt install -y libnuma-dev
 export PKG_CONFIG_PATH=/opt/dpdk/lib64/pkgconfig/
 
 ./build_oai -I  # if you never installed OAI, use this command once before the next line
-./build_oai --gNB --ninja -t oran_fhlib_5g --cmake-opt -Dxran_LOCATION=$HOME/Liteon-ngKore_E/phy/fhi_lib/lib
+./build_oai --gNB --ninja -t oran_fhlib_5g --cmake-opt -Dxran_LOCATION=/home/$(hostname)/phy/fhi_lib/lib
 
 #You can optionally check that everything has been linked properly with:
 ldd ran_build/build/liboran_fhlib_5g.so
