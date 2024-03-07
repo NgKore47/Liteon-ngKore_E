@@ -289,7 +289,8 @@ seven@seven:~$ pkg-config --libs libdpdk --static
 
 git clone -b fhi_4t_4r https://github.com/NgKore47/Liteon-ngKore_E.git
 cd Liteon-ngKore_E/
-cd phy/
+mv phy/ ../
+cd ../phy
 git apply ../openairinterface5g/cmake_targets/tools/oran_fhi_integration_patches/E/oaioran_E.patch
 cd fhi_lib/lib/
 
