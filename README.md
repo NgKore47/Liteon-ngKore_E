@@ -52,7 +52,7 @@ For further hardware info check out this file: [HW-info-NUMA-1](./hwinfo_1_NUMA.
 Install the real time kernel after the fresh OS installation.
 
 ```bash
-sudo pro attach C12BCiRPRPgoy53ukfYwgxjJbxQg4G
+sudo pro attach <>
 sudo pro enable realtime-kernel
 reboot now
 ```
